@@ -1,6 +1,6 @@
-# Annotator Robot
+# SEO-Annotator
 
-Standalone repo + CLI for the workflow-driven annotator stage.
+Annotator Robot for the workflow-driven review stage.
 
 ## What it does
 
