@@ -1,0 +1,55 @@
+{
+  "queueRow": {
+    "id": 101,
+    "topic": "Vepdegestrant FDA approval",
+    "proposed_h1": "Vepdegestrant 新藥觀察",
+    "proposed_outline": [
+      {
+        "h2": "核准適應症",
+        "key_claims": [
+          "需確認 ESR1 突變",
+          "FDA 核准日期 2026-05-01"
+        ],
+        "source_hints": [
+          "https://www.fda.gov/",
+          "https://www.pfizer.com/"
+        ]
+      }
+    ],
+    "proposed_satellites": [],
+    "source_hints": [
+      "https://www.fda.gov/",
+      "https://www.pfizer.com/"
+    ],
+    "target_reader": "patient",
+    "planner_mode": "news"
+  },
+  "articles": [
+    {
+      "id": 2001,
+      "title": "Vepdegestrant 新藥觀察",
+      "slug": "vepdegestrant-overview",
+      "content_tier": "main",
+      "target_reader": "patient",
+      "status": "draft",
+      "journey_stage_id": 1,
+      "is_main": true,
+      "meta_description": "Vepdegestrant 文章描述",
+      "draft_json": {
+        "meta": {
+          "description": "FDA 已於 2026-05-01 核准 vepdegestrant。"
+        },
+        "content": [
+          { "type": "h1", "runs": "Vepdegestrant 新藥觀察" },
+          { "type": "h2", "runs": "核准適應症" },
+          { "type": "p", "runs": "Vepdegestrant 已於 2026-05-01 獲 FDA 核准，且使用前需確認 ESR1 突變。" },
+          { "type": "faq", "pairs": [{ "q": "誰適合使用？", "a": "需先確認 ESR1 突變是否存在。" }] }
+        ],
+        "sources": [
+          { "text": "FDA", "url": "https://www.fda.gov/" }
+        ],
+        "comments": []
+      }
+    }
+  ]
+}
