@@ -32,15 +32,29 @@ async function loadPlaywright() {
 
 let _browser = null;
 let _browserClosing = null;
+let _launchDisabled = false;          // Sticky after first launch failure
 
 async function ensureBrowser(pw) {
   if (_browser) return _browser;
-  _browser = await pw.chromium.launch({
-    headless: true,
-    args: ["--disable-blink-features=AutomationControlled"],
-  });
-  return _browser;
+  if (_launchDisabled) return null;
+  try {
+    _browser = await pw.chromium.launch({
+      headless: true,
+      args: ["--disable-blink-features=AutomationControlled"],
+    });
+    return _browser;
+  } catch (error) {
+    // Common case: Playwright npm package is installed but its browser
+    // binaries haven't been downloaded (`npx playwright install chromium`).
+    // Mark Layer 2c as unavailable for the rest of this process so we
+    // don't pay the launch cost on every claim.
+    _launchDisabled = true;
+    _launchError = error?.message ?? String(error);
+    return null;
+  }
 }
+
+let _launchError = null;
 
 /** Allow the CLI to clean up the singleton at process exit. */
 export async function shutdownBrowser() {
@@ -70,6 +84,16 @@ export async function browserFetch(url, { timeoutMs = 25_000 } = {}) {
   }
 
   const browser = await ensureBrowser(pw);
+  if (!browser) {
+    return {
+      ok: false,
+      status: 0,
+      text: "",
+      finalUrl: url,
+      attempts: [{ n: 1, ok: false, errorMessage: _launchError ?? "chromium binary missing — run: npx playwright install chromium" }],
+      reason: "chromium not available",
+    };
+  }
   const context = await browser.newContext({
     userAgent:
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +

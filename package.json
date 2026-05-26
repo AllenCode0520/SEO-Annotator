@@ -9,8 +9,8 @@
   },
   "scripts": {
     "annotate:json": "node ./src/cli.js annotate-json",
-    "annotate:run-once": "node ./src/cli.js run-once",
-    "cleanup:stale": "node ./src/cli.js cleanup-stale",
+    "annotate:run-once": "node --env-file=.env ./src/cli.js run-once",
+    "cleanup:stale": "node --env-file=.env ./src/cli.js cleanup-stale",
     "test": "node --test"
   },
   "dependencies": {
