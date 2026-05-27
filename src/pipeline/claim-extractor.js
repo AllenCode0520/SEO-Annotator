@@ -18,22 +18,6 @@ export function extractClaimsFromArticle(article, queueRow) {
   const readableBlocks = readDraftContent(draft);
   const claims = [];
 
-  const metaDescription = normalizeWhitespace(draft?.meta?.description ?? "");
-  if (containsClaimSignal(metaDescription)) {
-    claims.push({
-      articleId: article.id,
-      articleTitle: article.title,
-      blockType: "meta.description",
-      sectionH2: "",
-      text: metaDescription,
-      searchText: toSearchText(metaDescription),
-      factType: classifyClaim(metaDescription),
-      blockIndex: -1,
-      sourceHints: queueRow?.source_hints ?? [],
-      placementHint: "paragraph"
-    });
-  }
-
   for (const block of readableBlocks) {
     if (["h1", "h2", "h3"].includes(block.blockType)) continue;
     const segments = makeClaimSegments(block);

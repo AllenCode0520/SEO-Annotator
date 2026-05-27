@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readDraftContent } from "../src/adapters/content-adapter.js";
+import { extractClaimsFromArticle } from "../src/pipeline/claim-extractor.js";
 import { evaluateCoverage, buildCoverageMetaComments } from "../src/pipeline/coverage-checker.js";
 import { matchSourcesForClaim } from "../src/pipeline/source-matcher.js";
 import { readOutlineSections } from "../src/adapters/outline-adapter.js";
@@ -34,6 +35,36 @@ test("content adapter flattens paragraph and faq blocks", () => {
 });
 
 // ─── coverage-checker ───────────────────────────────────────────────
+
+test("claim extractor does not emit meta description as anchorable claims", () => {
+  const article = {
+    id: "article-1",
+    title: "Visible body wins",
+    draft_json: {
+      meta: {
+        description:
+          "FDA approved a rewritten meta summary in 2026 that is not visible in the article body.",
+      },
+      content: [
+        { type: "h1", runs: "Article title" },
+        {
+          type: "p",
+          runs:
+            "FDA approved the visible article sentence in 2026 for ESR1-mutated breast cancer.",
+        },
+      ],
+    },
+  };
+
+  const claims = extractClaimsFromArticle(article, { source_hints: ["https://example.com"] });
+
+  assert.equal(claims.length, 1);
+  assert.equal(
+    claims[0].searchText,
+    "FDA approved the visible article sentence in 2026 for ESR1-mutated breast cancer."
+  );
+  assert.equal(claims[0].blockType, "p");
+});
 
 test("coverage checker counts covered claims from checkpoint and verbatim", () => {
   const outline = [

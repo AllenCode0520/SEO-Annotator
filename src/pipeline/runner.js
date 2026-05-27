@@ -92,13 +92,9 @@ export async function runAnnotatorGroup(queueRow, articles) {
 
     // Collect prose text used by the in-prose-substring quality check.
     const proseBlocks = readDraftContent(article.draft_json);
-    const metaDescription = article?.draft_json?.meta?.description;
     articleProseLookup.set(
       article.id,
-      [
-        ...proseBlocks.map((block) => block.text),
-        typeof metaDescription === "string" ? metaDescription : "",
-      ].filter(Boolean)
+      proseBlocks.map((block) => block.text).filter(Boolean)
     );
 
     // Z-0/Z-1: extract + match
@@ -116,8 +112,10 @@ export async function runAnnotatorGroup(queueRow, articles) {
     // Z-5: build comments
     let comments = buildCommentsFromGrounded(grounded);
 
-    // Z-4: coverage
-    const coverage = evaluateCoverage(queueRow?.proposed_outline ?? [], comments);
+    // Z-4: coverage — pass article prose so Chinese key_claims can be
+    // matched against the article body even when sources are English-only.
+    const articleProseBlocks = articleProseLookup.get(article.id) ?? [];
+    const coverage = evaluateCoverage(queueRow?.proposed_outline ?? [], comments, articleProseBlocks);
     if (coverage.ratio >= COVERAGE_MIN_RATIO && coverage.missing.length) {
       const metaComments = buildCoverageMetaComments(
         article.id,
